@@ -1,4 +1,9 @@
-require 'gettext_i18n_rails/gettext_hooks'
+require 'gettext/utils'
+begin
+  require 'gettext/tools/rgettext'
+rescue LoadError #version prior to 2.0
+  require 'gettext/rgettext'
+end
 
 module GettextI18nRails
   class BaseParser
@@ -11,7 +16,7 @@ module GettextI18nRails
       code = convert_to_code(File.read(file))
       RubyGettextExtractor.parse_string(code, file, msgids)
     rescue Racc::ParseError => e
-      $stderr.puts "file ignored: ruby_parser cannot read #{extension} files with 1.9 syntax --- #{file}: (#{e.message.strip})"
+      $stderr.puts "file ignored: ruby_parser cannot parse #{file}: (#{e.message.strip})"
       return msgids
     end
 
